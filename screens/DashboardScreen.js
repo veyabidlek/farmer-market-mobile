@@ -1,12 +1,13 @@
-// screens/DashboardScreen.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, FlatList, StyleSheet, Alert } from "react-native";
 import { Button, Text } from "react-native-elements";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../api/farmer/getFarmerProducts";
 
 const DashboardScreen = ({ navigation }) => {
-  const [products, setProducts] = useState([]); // Start with an empty array
+  const [products, setProducts] = useState([]);
+
   const fetchProductList = async () => {
     try {
       const productList = await getProducts();
@@ -21,9 +22,12 @@ const DashboardScreen = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchProductList();
-  }, []);
+  // Use useFocusEffect to refetch data when the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchProductList();
+    }, []) // Dependencies can be added if needed
+  );
 
   const handleDelete = (id) => {
     Alert.alert(
@@ -42,7 +46,6 @@ const DashboardScreen = ({ navigation }) => {
     );
   };
 
-  // Function to handle editing of a product
   const handleEdit = (product) => {
     navigation.navigate("Edit Product", { product, setProducts });
   };

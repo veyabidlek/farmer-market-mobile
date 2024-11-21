@@ -1,45 +1,19 @@
 // screens/AddProductScreen.js
 import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, Alert, Image } from "react-native";
-import { Input, Button, Text, ButtonGroup } from "react-native-elements";
-import * as ImagePicker from "expo-image-picker";
+import { View, StyleSheet, ScrollView, Alert } from "react-native";
+import { Input, Button, Text } from "react-native-elements";
+import { addFarmerProduct } from "../api/farmer/addFarmerProduct";
 
 const AddProductScreen = ({ route, navigation }) => {
   const { setProducts } = route.params;
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("Vegetables");
+  const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
-  const [images, setImages] = useState([]);
 
-  const categories = ["Vegetables", "Fruits", "Seeds"];
-
-  const pickImage = async () => {
-    // Ask for permission
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission Denied",
-        "Permission to access gallery is required!"
-      );
-      return;
-    }
-
-    // Pick image
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: false, // Expo ImagePicker doesn't support multiple selection
-      quality: 0.5, // Resize image to half quality for optimization
-    });
-
-    if (!result.cancelled) {
-      setImages([...images, result.uri]);
-    }
-  };
-
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     // Validate inputs
     if (
       name.trim() === "" ||
@@ -52,23 +26,26 @@ const AddProductScreen = ({ route, navigation }) => {
       return;
     }
 
-    // Create new product
-    const newProduct = {
-      id: Math.random(), // Simple unique ID
-      name,
-      category,
-      price: parseFloat(price),
-      quantity: parseInt(quantity),
-      description,
-      images,
-    };
+    try {
+      const success = await addFarmerProduct(
+        name,
+        parseFloat(price),
+        parseInt(quantity),
+        description,
+        parseInt(category)
+      );
 
-    // Update products list
-    setProducts((prevProducts) => [...prevProducts, newProduct]);
-
-    Alert.alert("Success", "Product added successfully!", [
-      { text: "OK", onPress: () => navigation.goBack() },
-    ]);
+      if (success) {
+        Alert.alert("Success", "Product added successfully!", [
+          { text: "OK", onPress: () => navigation.goBack() },
+        ]);
+      } else {
+        Alert.alert("Error", "Failed to add product.");
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
+      Alert.alert("Error", "An error occurred while adding the product.");
+    }
   };
 
   return (
@@ -77,12 +54,11 @@ const AddProductScreen = ({ route, navigation }) => {
         Add New Product
       </Text>
       <Input placeholder="Product Name" value={name} onChangeText={setName} />
-      <Text style={{ marginLeft: 10, marginBottom: 5 }}>Category:</Text>
-      <ButtonGroup
-        buttons={categories}
-        selectedIndex={categories.indexOf(category)}
-        onPress={(index) => setCategory(categories[index])}
-        containerStyle={{ marginBottom: 20 }}
+      <Input
+        placeholder="Category ID"
+        value={category}
+        onChangeText={setCategory}
+        keyboardType="numeric"
       />
       <Input
         placeholder="Price"
@@ -102,12 +78,6 @@ const AddProductScreen = ({ route, navigation }) => {
         onChangeText={setDescription}
         multiline
       />
-      <Button title="Pick Images" onPress={pickImage} />
-      <View style={styles.imageContainer}>
-        {images.map((uri, index) => (
-          <Image key={index} source={{ uri }} style={styles.image} />
-        ))}
-      </View>
       <Button
         title="Add Product"
         onPress={handleAddProduct}
@@ -120,17 +90,6 @@ const AddProductScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-  },
-  imageContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 10,
-  },
-  image: {
-    width: 80,
-    height: 80,
-    marginRight: 10,
-    marginBottom: 10,
   },
 });
 

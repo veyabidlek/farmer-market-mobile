@@ -1,4 +1,3 @@
-// screens/EditProductScreen.js
 import React, { useState } from "react";
 import { View, StyleSheet, ScrollView, Alert, Image } from "react-native";
 import { Input, Button, Text, ButtonGroup } from "react-native-elements";
@@ -7,17 +6,16 @@ import * as ImagePicker from "expo-image-picker";
 const EditProductScreen = ({ route, navigation }) => {
   const { product, setProducts } = route.params;
 
-  const [name, setName] = useState(product.name);
-  const [category, setCategory] = useState(product.category);
-  const [price, setPrice] = useState(product.price.toString());
-  const [quantity, setQuantity] = useState(product.quantity.toString());
-  const [description, setDescription] = useState(product.description);
-  const [images, setImages] = useState(product.images);
+  const [name, setName] = useState(product.name || "");
+  const [category, setCategory] = useState(product.category || "");
+  const [price, setPrice] = useState(product.price?.toString() || "");
+  const [quantity, setQuantity] = useState(product.quantity?.toString() || "");
+  const [description, setDescription] = useState(product.description || "");
+  const [images, setImages] = useState(product.images || []);
 
   const categories = ["Vegetables", "Fruits", "Seeds"];
 
   const pickImage = async () => {
-    // Ask for permission
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
@@ -27,11 +25,10 @@ const EditProductScreen = ({ route, navigation }) => {
       return;
     }
 
-    // Pick image
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: false, // Expo ImagePicker doesn't support multiple selection
-      quality: 0.5, // Resize image to half quality for optimization
+      allowsMultipleSelection: false,
+      quality: 0.5,
     });
 
     if (!result.cancelled) {
@@ -40,30 +37,27 @@ const EditProductScreen = ({ route, navigation }) => {
   };
 
   const handleUpdateProduct = () => {
-    // Validate inputs
     if (
-      name.trim() === "" ||
-      category.trim() === "" ||
-      price.trim() === "" ||
-      quantity.trim() === "" ||
-      description.trim() === ""
+      !name.trim() ||
+      !category.trim() ||
+      !price.trim() ||
+      !quantity.trim() ||
+      !description.trim()
     ) {
-      Alert.alert("Error", "Please fill all the fields.");
+      Alert.alert("Error", "All fields are required.");
       return;
     }
 
-    // Update product details
     const updatedProduct = {
       ...product,
       name,
       category,
       price: parseFloat(price),
-      quantity: parseInt(quantity),
+      quantity: parseInt(quantity, 10),
       description,
       images,
     };
 
-    // Update products list
     setProducts((prevProducts) =>
       prevProducts.map((p) => (p.id === product.id ? updatedProduct : p))
     );

@@ -7,9 +7,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
   return (
     <Card>
       <View style={styles.container}>
-        {product.images && product.images.length > 0 && (
-          <Image source={{ uri: product.images[0] }} style={styles.image} />
-        )}
+        <Image source={{ uri: product.image_url }} style={styles.image} />
         <View style={styles.info}>
           <Text style={styles.title}>{product.name}</Text>
           <Text>Category: {product.category}</Text>

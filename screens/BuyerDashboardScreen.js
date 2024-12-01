@@ -10,6 +10,7 @@ import {
   Animated,
   LayoutAnimation,
   UIManager,
+  Image,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Text } from "react-native-elements";
@@ -39,8 +40,6 @@ const BuyerDashboardScreen = ({ navigation }) => {
     setShowFilters(!showFilters);
   };
 
-  // Rest of your existing functions (fetchProductList, getFilteredAndSortedProducts, etc.)
-  // ...
   const fetchProductList = async () => {
     try {
       const productList = await getBuyerProducts();
@@ -102,6 +101,39 @@ const BuyerDashboardScreen = ({ navigation }) => {
     return categoryMap[categoryId] || "Other";
   };
 
+  const renderProductCard = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={styles.productCard}
+        onPress={() => navigation.navigate("Product Detail", { product: item })}
+      >
+        <View style={styles.imageContainer}>
+          {item.image_url ? (
+            <Image
+              source={{ uri: item.image_url }}
+              style={styles.productImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={[styles.productImage, styles.placeholderImage]}>
+              <Text style={styles.placeholderText}>No Image</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.productInfo}>
+          <Text style={styles.productName}>{item.name}</Text>
+          <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
+          <Text style={styles.productCategory}>
+            {getCategoryName(item.category_id)}
+          </Text>
+          <Text style={styles.productDescription} numberOfLines={2}>
+            {item.description}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   const filteredProducts = getFilteredAndSortedProducts();
 
   const ListHeader = () => (
@@ -112,6 +144,7 @@ const BuyerDashboardScreen = ({ navigation }) => {
       </Text>
     </View>
   );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -228,14 +261,7 @@ const BuyerDashboardScreen = ({ navigation }) => {
           data={filteredProducts}
           keyExtractor={(item) => item.id.toString()}
           ListHeaderComponent={ListHeader}
-          renderItem={({ item }) => (
-            <BuyerProductCard
-              product={item}
-              onPress={() =>
-                navigation.navigate("Product Detail", { product: item })
-              }
-            />
-          )}
+          renderItem={renderProductCard}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
         />
@@ -245,6 +271,7 @@ const BuyerDashboardScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  // ... (keeping existing styles)
   container: {
     flex: 1,
     backgroundColor: "#f8f9fa",
@@ -259,104 +286,62 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 3,
   },
-  searchRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    gap: 12,
-  },
-  searchInput: {
-    flex: 1,
-    height: 44,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#e9ecef",
-    color: "#212529",
-  },
-  filterButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 44,
-    width: 44,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#e9ecef",
-    gap: 2,
-  },
-  filtersSection: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  filtersRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  pickerWrapper: {
-    flex: 1,
-  },
-  pickerLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#495057",
-    marginBottom: 6,
-    marginLeft: 4,
-  },
-  pickerContainer: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#e9ecef",
+  // ... (other existing styles)
+
+  // New styles for product cards with images
+  productCard: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     overflow: "hidden",
   },
-  pickerIOS: {
-    height: 144,
-    backgroundColor: "transparent",
-  },
-  pickerAndroid: {
-    height: 44,
-    backgroundColor: "transparent",
-    color: "#212529",
-  },
-  pickerItemAndroid: {
-    fontSize: 16,
-    color: "#212529",
+  imageContainer: {
+    width: "100%",
+    height: 200,
     backgroundColor: "#f8f9fa",
   },
-  listContainer: {
-    padding: 16,
-    paddingTop: 8,
+  productImage: {
+    width: "100%",
+    height: "100%",
   },
-  resultsHeader: {
-    marginBottom: 16,
-  },
-  resultsText: {
-    fontSize: 15,
-    color: "#495057",
-    fontWeight: "500",
-  },
-  noProductsContainer: {
-    flex: 1,
+  placeholderImage: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
-    paddingHorizontal: 32,
+    backgroundColor: "#e9ecef",
   },
-  noProducts: {
+  placeholderText: {
+    fontSize: 16,
+    color: "#6c757d",
+  },
+  productInfo: {
+    padding: 16,
+  },
+  productName: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#495057",
+    color: "#212529",
     marginBottom: 8,
   },
-  noProductsSubtext: {
-    fontSize: 15,
+  productPrice: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#495057",
+    marginBottom: 4,
+  },
+  productCategory: {
+    fontSize: 14,
     color: "#6c757d",
-    textAlign: "center",
+    marginBottom: 8,
+  },
+  productDescription: {
+    fontSize: 14,
+    color: "#495057",
+    lineHeight: 20,
   },
 });
 

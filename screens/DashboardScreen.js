@@ -1,14 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, FlatList, StyleSheet, Alert } from "react-native";
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { Button, Text } from "react-native-elements";
-import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import { useFocusEffect } from "@react-navigation/native";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../api/farmer/getFarmerProducts";
+import { deleteFarmerProduct } from "../api/farmer/deleteFarmerProduct";
 
 const DashboardScreen = ({ navigation }) => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchProductList = async () => {
+    setLoading(true);
     try {
       const productList = await getProducts();
       if (Array.isArray(productList)) {
@@ -19,17 +28,18 @@ const DashboardScreen = ({ navigation }) => {
     } catch (error) {
       console.error("Error fetching products:", error);
       Alert.alert("Error", "Unable to fetch products. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Use useFocusEffect to refetch data when the screen is focused
   useFocusEffect(
     useCallback(() => {
       fetchProductList();
-    }, []) // Dependencies can be added if needed
+    }, [])
   );
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     Alert.alert(
       "Confirm Delete",
       "Are you sure you want to delete this product?",
@@ -38,8 +48,20 @@ const DashboardScreen = ({ navigation }) => {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
-            setProducts(products.filter((product) => product.id !== id));
+          onPress: async () => {
+            try {
+              await deleteFarmerProduct(id);
+              setProducts((prevProducts) =>
+                prevProducts.filter((product) => product.id !== id)
+              );
+              Alert.alert("Success", "Product deleted successfully.");
+            } catch (error) {
+              console.error("Error deleting product:", error);
+              Alert.alert(
+                "Error",
+                "Failed to delete product. Please try again."
+              );
+            }
           },
         },
       ]
@@ -55,10 +77,14 @@ const DashboardScreen = ({ navigation }) => {
       <Button
         title="Add New Product"
         onPress={() => navigation.navigate("Add Product", { setProducts })}
-        containerStyle={{ marginBottom: 20 }}
+        containerStyle={styles.addButton}
       />
-      {products.length === 0 ? (
-        <Text h4>No products available.</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : products.length === 0 ? (
+        <Text h4 style={styles.noProductsText}>
+          No products available.
+        </Text>
       ) : (
         <FlatList
           data={products}
@@ -70,6 +96,8 @@ const DashboardScreen = ({ navigation }) => {
               onDelete={() => handleDelete(item.id)}
             />
           )}
+          removeClippedSubviews={true} // Optimization
+          contentContainerStyle={styles.listContainer}
         />
       )}
     </View>
@@ -80,6 +108,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: "#fff",
+  },
+  addButton: {
+    marginBottom: 20,
+  },
+  noProductsText: {
+    textAlign: "center",
+    marginTop: 20,
+  },
+  listContainer: {
+    paddingBottom: 20,
   },
 });
 

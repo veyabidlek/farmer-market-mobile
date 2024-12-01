@@ -13,6 +13,10 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take photos of your products.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select product images."
+      },
       "supportsTablet": true
     },
     "android": {
@@ -23,6 +27,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends.",
+          "cameraPermission": "The app accesses your camera to let you take photos to share with your friends."
+        }
+      ]
+    ]
   }
 }

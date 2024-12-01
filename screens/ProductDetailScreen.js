@@ -2,7 +2,13 @@
 import React, { useState } from "react";
 import { View, StyleSheet, ScrollView, Image, Alert } from "react-native";
 import { Text, Button, Input } from "react-native-elements";
-
+const CATEGORIES = [
+  { id: 1, name: "Fruits" },
+  { id: 2, name: "Vegetables" },
+  { id: 3, name: "Dairy" },
+  { id: 4, name: "Plants" },
+  { id: 5, name: "Others" },
+];
 const ProductDetailScreen = ({ route, navigation }) => {
   const { product } = route.params;
   const [quantity, setQuantity] = useState("1");
@@ -22,17 +28,18 @@ const ProductDetailScreen = ({ route, navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       {/* Product Images */}
       <ScrollView horizontal>
-        {product.images.map((uri, index) => (
-          <Image key={index} source={{ uri }} style={styles.image} />
-        ))}
+        <Image source={{ uri: product.image_url }} style={styles.image} />
       </ScrollView>
 
       {/* Product Details */}
       <Text h4 style={{ marginTop: 20 }}>
         {product.name}
       </Text>
-      <Text style={styles.text}>Category: {product.category}</Text>
-      <Text style={styles.text}>Price: ${product.price}</Text>
+      <Text style={styles.category}>
+        {CATEGORIES.find((cat) => cat.id === product.category_id)?.name ||
+          "Others"}
+      </Text>
+      <Text style={styles.text}>Price: ₸{product.price}</Text>
       <Text style={styles.text}>Quantity Available: {product.quantity}</Text>
       <Text style={styles.text}>Farm Location: {product.farm_location}</Text>
       <Text style={styles.description}>{product.description}</Text>

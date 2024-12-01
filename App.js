@@ -37,6 +37,7 @@ export default function App() {
             <LoginScreen {...props} setIsFarmerLoggedIn={setIsFarmerLoggedIn} />
           )}
         </Stack.Screen>
+
         <Stack.Screen name="FarmerRegister" component={RegisterScreen} />
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
         <Stack.Screen name="Add Product" component={AddProductScreen} />

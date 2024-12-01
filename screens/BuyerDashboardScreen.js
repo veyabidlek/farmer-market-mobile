@@ -106,7 +106,7 @@ const BuyerDashboardScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.productCard}
-        onPress={() => navigation.navigate("Product Detail", { product: item })}
+        onPress={() => navigation.navigate("ProductDetail", { product: item })}
       >
         <View style={styles.imageContainer}>
           {item.image_url ? (
@@ -123,7 +123,7 @@ const BuyerDashboardScreen = ({ navigation }) => {
         </View>
         <View style={styles.productInfo}>
           <Text style={styles.productName}>{item.name}</Text>
-          <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
+          <Text style={styles.productPrice}>₸{item.price.toFixed(2)}</Text>
           <Text style={styles.productCategory}>
             {getCategoryName(item.category_id)}
           </Text>

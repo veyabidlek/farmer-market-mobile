@@ -93,10 +93,11 @@ const BuyerDashboardScreen = ({ navigation }) => {
 
   const getCategoryName = (categoryId) => {
     const categoryMap = {
-      0: "Other",
-      1: "Vegetables",
-      2: "Fruits",
+      1: "Fruits",
+      2: "Vegetables",
       3: "Dairy",
+      4: "Plants",
+      5: "Others",
     };
     return categoryMap[categoryId] || "Other";
   };
@@ -271,38 +272,119 @@ const BuyerDashboardScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  // ... (keeping existing styles)
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f1f3f5", // Light gray background for better contrast
   },
   header: {
-    backgroundColor: "white",
+    backgroundColor: "#ffffff",
     borderBottomWidth: 1,
-    borderBottomColor: "#e9ecef",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-  },
-  // ... (other existing styles)
-
-  // New styles for product cards with images
-  productCard: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    marginBottom: 16,
-    elevation: 2,
+    borderBottomColor: "#dee2e6",
+    padding: 16,
+    elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ced4da",
+    paddingHorizontal: 12,
+    backgroundColor: "#ffffff",
+    fontSize: 14,
+    color: "#495057",
+  },
+  filterButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: "#e9ecef",
+    borderRadius: 8,
+  },
+  filtersSection: {
+    marginTop: 8,
+    padding: 12,
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+  },
+  filtersRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  pickerWrapper: {
+    flex: 1,
+    marginHorizontal: 8,
+  },
+  pickerLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#212529",
+    marginBottom: 4,
+  },
+  pickerContainer: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ced4da",
+    backgroundColor: "#ffffff",
     overflow: "hidden",
+  },
+  pickerIOS: {
+    height: 144,
+  },
+  pickerItemAndroid: {
+    fontSize: 14,
+    color: "#495057",
+  },
+  listContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  noProductsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noProducts: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#6c757d",
+  },
+  noProductsSubtext: {
+    fontSize: 14,
+    color: "#adb5bd",
+    marginTop: 4,
+  },
+  productCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#dee2e6",
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   imageContainer: {
     width: "100%",
-    height: 200,
+    height: 180,
     backgroundColor: "#f8f9fa",
   },
   productImage: {
@@ -316,7 +398,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     fontSize: 16,
-    color: "#6c757d",
+    color: "#adb5bd",
   },
   productInfo: {
     padding: 16,
@@ -330,7 +412,7 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#495057",
+    color: "#20c997",
     marginBottom: 4,
   },
   productCategory: {

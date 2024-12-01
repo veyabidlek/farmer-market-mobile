@@ -1,12 +1,13 @@
+// DashboardScreen.js
 import React, { useState, useCallback } from "react";
 import {
   View,
   FlatList,
-  StyleSheet,
   Alert,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
-import { Button, Text } from "react-native-elements";
+import { Button, Text, Icon } from "react-native-elements";
 import { useFocusEffect } from "@react-navigation/native";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../api/farmer/getFarmerProducts";
@@ -74,17 +75,37 @@ const DashboardScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Button
-        title="Add New Product"
-        onPress={() => navigation.navigate("Add Product", { setProducts })}
-        containerStyle={styles.addButton}
-      />
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerTitle}>My Products</Text>
+        <Button
+          title="Add New"
+          onPress={() => navigation.navigate("Add Product", { setProducts })}
+          buttonStyle={styles.addButton}
+          titleStyle={styles.addButtonText}
+          icon={
+            <Icon
+              name="add"
+              type="material"
+              size={20}
+              color="#FFFFFF"
+              containerStyle={{ marginRight: 5 }}
+            />
+          }
+          iconRight
+        />
+      </View>
+
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+        </View>
       ) : products.length === 0 ? (
-        <Text h4 style={styles.noProductsText}>
-          No products available.
-        </Text>
+        <View style={styles.emptyStateContainer}>
+          <Text style={styles.emptyStateText}>No Products Available</Text>
+          <Text style={styles.emptyStateSubtext}>
+            Start by adding your first product to showcase your offerings.
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={products}
@@ -96,8 +117,9 @@ const DashboardScreen = ({ navigation }) => {
               onDelete={() => handleDelete(item.id)}
             />
           )}
-          removeClippedSubviews={true} // Optimization
+          removeClippedSubviews={true}
           contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </View>
@@ -107,18 +129,58 @@ const DashboardScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#E8F5E9", // Light green background
+    paddingTop: 50,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 25,
+    marginBottom: 25,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#2E7D32", // Darker green for better contrast
   },
   addButton: {
-    marginBottom: 20,
+    backgroundColor: "#66BB6A", // Vibrant green
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
   },
-  noProductsText: {
+  addButtonText: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 50,
+  },
+  emptyStateText: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1B5E20", // Dark green
+    marginBottom: 12,
+  },
+  emptyStateSubtext: {
+    fontSize: 16,
+    color: "#388E3C", // Medium green
     textAlign: "center",
-    marginTop: 20,
   },
   listContainer: {
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
 });
 

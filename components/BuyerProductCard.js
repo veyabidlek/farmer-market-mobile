@@ -1,9 +1,9 @@
 // components/BuyerProductCard.js
-
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { Card } from "react-native-elements";
+import { Card, Icon } from "react-native-elements";
 import PropTypes from "prop-types";
+import { COLORS } from "../theme"; // Importing from theme.js
 
 const BuyerProductCard = ({ product, onPress }) => {
   const {
@@ -49,20 +49,28 @@ BuyerProductCard.propTypes = {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 0,
-    margin: 10,
+    marginVertical: 10,
+    marginHorizontal: 16,
     overflow: "hidden", // Ensures content is clipped within the card
+    backgroundColor: COLORS.white,
+    shadowColor: COLORS.darkGreen,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   container: {
     flexDirection: "row",
-    padding: 10,
+    padding: 15,
   },
   image: {
     width: 100,
     height: 100,
-    borderRadius: 5,
-    marginRight: 10,
+    borderRadius: 10,
+    marginRight: 15,
+    backgroundColor: COLORS.placeholderGreen,
   },
   info: {
     flex: 1,
@@ -70,12 +78,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "800",
+    color: COLORS.darkGreen,
     marginBottom: 5,
   },
   text: {
     fontSize: 14,
     color: "#555",
+    marginBottom: 3,
   },
 });
 

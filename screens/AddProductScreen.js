@@ -1,20 +1,30 @@
 import React, { useState } from "react";
 import { View, StyleSheet, ScrollView, Alert, Image } from "react-native";
 import { Input, Button, Text } from "react-native-elements";
+import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { addFarmerProduct } from "../api/farmer/addFarmerProduct";
 import { uploadImage } from "../api/farmer/uploadProductImage";
+
+const CATEGORIES = [
+  { id: 1, name: "Fruits" },
+  { id: 2, name: "Vegetables" },
+  { id: 3, name: "Dairy" },
+  { id: 4, name: "Plants" },
+  { id: 5, name: "Others" },
+];
 
 const AddProductScreen = ({ route, navigation }) => {
   const { setProducts } = route.params;
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("1"); // Default to first category
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
   const [iosImage, setIosImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
   const selectImage = () => {
     Alert.alert(
       "Select Image",
@@ -77,7 +87,6 @@ const AddProductScreen = ({ route, navigation }) => {
     }
   };
 
-  // In AddProductScreen.js, update the handleAddProduct function:
   const handleAddProduct = async () => {
     try {
       console.log("Starting product submission...");
@@ -92,11 +101,6 @@ const AddProductScreen = ({ route, navigation }) => {
       const priceNum = parseFloat(price);
       const quantityNum = parseInt(quantity);
 
-      if (isNaN(categoryNum)) {
-        Alert.alert("Validation Error", "Category ID must be a number.");
-        return;
-      }
-
       if (isNaN(priceNum)) {
         Alert.alert("Validation Error", "Price must be a valid number.");
         return;
@@ -107,7 +111,6 @@ const AddProductScreen = ({ route, navigation }) => {
         return;
       }
 
-      // Show loading state
       setIsLoading(true);
 
       let image_url = "";
@@ -189,12 +192,24 @@ const AddProductScreen = ({ route, navigation }) => {
       </View>
 
       <Input placeholder="Product Name" value={name} onChangeText={setName} />
-      <Input
-        placeholder="Category ID"
-        value={category}
-        onChangeText={setCategory}
-        keyboardType="numeric"
-      />
+
+      <View style={styles.pickerContainer}>
+        <Text style={styles.pickerLabel}>Category</Text>
+        <Picker
+          selectedValue={category}
+          onValueChange={(itemValue) => setCategory(itemValue)}
+          style={styles.picker}
+        >
+          {CATEGORIES.map((cat) => (
+            <Picker.Item
+              key={cat.id}
+              label={cat.name}
+              value={cat.id.toString()}
+            />
+          ))}
+        </Picker>
+      </View>
+
       <Input
         placeholder="Price"
         value={price}
@@ -257,6 +272,20 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 20,
+  },
+  pickerContainer: {
+    marginHorizontal: 10,
+    marginBottom: 20,
+  },
+  pickerLabel: {
+    fontSize: 16,
+    color: "gray",
+    marginBottom: 5,
+    marginLeft: 10,
+  },
+  picker: {
+    backgroundColor: "#f2f2f2",
+    borderRadius: 8,
   },
 });
 

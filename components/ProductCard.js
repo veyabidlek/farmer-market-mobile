@@ -2,7 +2,13 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Card, Button } from "react-native-elements";
-
+const CATEGORIES = [
+  { id: 1, name: "Fruits" },
+  { id: 2, name: "Vegetables" },
+  { id: 3, name: "Dairy" },
+  { id: 4, name: "Plants" },
+  { id: 5, name: "Others" },
+];
 const ProductCard = ({ product, onEdit, onDelete }) => {
   return (
     <Card>
@@ -10,7 +16,10 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
         <Image source={{ uri: product.image_url }} style={styles.image} />
         <View style={styles.info}>
           <Text style={styles.title}>{product.name}</Text>
-          <Text>Category: {product.category}</Text>
+          <Text style={styles.text}>
+            {CATEGORIES.find((cat) => cat.id === product.category_id)?.name ||
+              "Others"}
+          </Text>
           <Text>Price: ${product.price}</Text>
           <Text>Quantity: {product.quantity}</Text>
           <Text>Description: {product.description}</Text>
@@ -32,6 +41,10 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
 };
 
 const styles = StyleSheet.create({
+  text: {
+    color: "green",
+    fontWeight: "bold",
+  },
   container: { flexDirection: "row" },
   image: { width: 100, height: 100, marginRight: 10 },
   info: { flex: 1 },

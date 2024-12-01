@@ -249,7 +249,15 @@ const BuyerDashboardScreen = ({ navigation }) => {
           </View>
         )}
       </View>
-
+      <View style={styles.headerActions}>
+        {/* Existing actions */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("AllChats")}
+          style={styles.allChatsButton}
+        >
+          <Text style={styles.allChatsButtonText}>All Chats</Text>
+        </TouchableOpacity>
+      </View>
       {filteredProducts.length === 0 ? (
         <View style={styles.noProductsContainer}>
           <Text style={styles.noProducts}>No products found</Text>
@@ -424,6 +432,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#495057",
     lineHeight: 20,
+  },
+  // In your StyleSheet
+  headerActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  allChatsButton: {
+    padding: 10,
+    backgroundColor: "#007AFF",
+    borderRadius: 5,
+  },
+  allChatsButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 

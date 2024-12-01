@@ -4,10 +4,11 @@ import { BACKEND_URL } from "../config";
 export const getBuyerId = async () => {
   try {
     const token = await getToken();
-    const response = await axios.post(`${BACKEND_URL}/buyer/user`, {
+    const response = await axios.get(`${BACKEND_URL}/buyer/user`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data.user.id;
+    console.log("buyer id:", response.data.user.id);
+    return response.data.id;
   } catch (err) {
     console.error("erorr getting buyer id");
   }

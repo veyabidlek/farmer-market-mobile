@@ -4,6 +4,7 @@ import { BACKEND_URL } from "../config";
 export const getMessages = async (conversationID) => {
   try {
     const token = await getToken();
+    console.log(conversationID);
     const response = await axios.get(
       `${BACKEND_URL}/chat/conversations/${conversationID}/messages`,
       {},
@@ -13,6 +14,6 @@ export const getMessages = async (conversationID) => {
     );
     return response.data;
   } catch (err) {
-    console.error("error getting chat list...");
+    console.error("error getting messages...");
   }
 };

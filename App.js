@@ -9,7 +9,8 @@ import RegisterScreen from "./screens/RegisterScreen";
 import DashboardScreen from "./screens/DashboardScreen";
 import AddProductScreen from "./screens/AddProductScreen";
 import EditProductScreen from "./screens/EditProductScreen";
-
+import ChatScreen from "./screens/ChatScreen";
+import AllChatsScreen from "./screens/AllChatsScreen";
 import BuyerLoginScreen from "./screens/BuyerLoginScreen";
 import BuyerRegisterScreen from "./screens/BuyerRegisterScreen";
 import BuyerDashboardScreen from "./screens/BuyerDashboardScreen";
@@ -37,7 +38,8 @@ export default function App() {
             <LoginScreen {...props} setIsFarmerLoggedIn={setIsFarmerLoggedIn} />
           )}
         </Stack.Screen>
-
+        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="AllChats" component={AllChatsScreen} />
         <Stack.Screen name="FarmerRegister" component={RegisterScreen} />
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
         <Stack.Screen name="Add Product" component={AddProductScreen} />

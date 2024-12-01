@@ -5,7 +5,8 @@ import { getToken } from "./getToken";
 export const sendMessage = async (conversationID, content) => {
   try {
     const token = await getToken();
-    const response = axios.post(
+    console.log("conversation id:", conversationID);
+    const response = await axios.post(
       `${BACKEND_URL}/chat/conversations/${conversationID}/messages`,
       {
         content,

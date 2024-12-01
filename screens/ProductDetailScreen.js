@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet, ScrollView, Image, Alert } from "react-native";
 import { Text, Button, Input } from "react-native-elements";
+import { startChat } from "../api/buyer/startChat";
 const CATEGORIES = [
   { id: 1, name: "Fruits" },
   { id: 2, name: "Vegetables" },
@@ -22,6 +23,18 @@ const ProductDetailScreen = ({ route, navigation }) => {
     Alert.alert("Success", "Your order has been placed!", [
       { text: "OK", onPress: () => navigation.goBack() },
     ]);
+  };
+  const handleStartChat = async () => {
+    try {
+      const farmerID = product.farmer_id;
+      console.log("farmer id: ", product.farmer_id);
+      const conversation = await startChat(farmerID);
+      const conversationID = conversation;
+      navigation.navigate("Chat", { conversationID, product });
+    } catch (err) {
+      console.error("Error starting chat:", err);
+      Alert.alert("Error", "Unable to start chat. Please try again.");
+    }
   };
 
   return (
@@ -53,6 +66,11 @@ const ProductDetailScreen = ({ route, navigation }) => {
         style={{ width: 100 }}
       />
       <Button title="Place Order" onPress={handlePlaceOrder} />
+      <Button
+        title="Start Chat"
+        onPress={handleStartChat}
+        buttonStyle={{ marginTop: 10 }}
+      />
     </ScrollView>
   );
 };

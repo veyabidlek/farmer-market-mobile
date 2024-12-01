@@ -109,7 +109,7 @@ const DashboardScreen = ({ navigation }) => {
       ) : (
         <FlatList
           data={products}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ProductCard
               product={item}

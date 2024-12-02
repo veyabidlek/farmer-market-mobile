@@ -1,4 +1,4 @@
-// ChatScreen.js
+// FarmerChatScreen.js
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -11,11 +11,11 @@ import {
   Platform,
 } from "react-native";
 import { Button } from "react-native-elements";
-import { getMessages } from "../api/buyer/getMessages";
-import { sendMessage } from "../api/buyer/sendMessage";
-import { getBuyerId2 } from "../api/buyer/getBuyerId2"; // Adjust the path as necessary
 
-const ChatScreen = ({ route, navigation }) => {
+import { getBuyerId } from "../api/buyer/getBuyerId";
+import { getFarmerMessages } from "../api/farmer/getFarmerMessages";
+import { sendFarmerMessage } from "../api/farmer/sendFarmerMessage";
+const FarmerChatScreen = ({ route, navigation }) => {
   const { conversationID, product } = route.params;
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState("");
@@ -34,13 +34,13 @@ const ChatScreen = ({ route, navigation }) => {
   }, []);
 
   const fetchBuyerId = async () => {
-    const id = await getBuyerId2();
+    const id = await getBuyerId();
     setBuyerID(id);
   };
 
   const fetchMessages = async () => {
     try {
-      const data = await getMessages(conversationID);
+      const data = await getFarmerMessages(conversationID);
       setMessages(data);
     } catch (err) {
       console.error("Error fetching messages:", err);
@@ -51,7 +51,7 @@ const ChatScreen = ({ route, navigation }) => {
     if (content.trim() === "") return;
 
     try {
-      await sendMessage(conversationID, content.trim());
+      await sendFarmerMessage(conversationID, content.trim());
       setContent("");
       fetchMessages();
     } catch (err) {
@@ -63,24 +63,10 @@ const ChatScreen = ({ route, navigation }) => {
     <View
       style={[
         styles.messageContainer,
-        item.sender_id == buyerID ? styles.myMessage : styles.otherMessage,
+        item.sender_id === buyerID ? styles.myMessage : styles.otherMessage,
       ]}
     >
-      <Text
-        style={[
-          item.sender_id == buyerID
-            ? styles.myMessageText
-            : styles.otherMessageText,
-        ]}
-      >
-        {item.content}
-      </Text>
-      <Text style={styles.timestamp}>
-        {new Date(item.timestamp).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
-      </Text>
+      <Text style={styles.messageText}>{item.content}</Text>
     </View>
   );
 
@@ -94,7 +80,8 @@ const ChatScreen = ({ route, navigation }) => {
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id.toString()}
-        inverted
+        inverted // To show the latest messages at the bottom
+        contentContainerStyle={{ flexDirection: "column-reverse" }}
       />
       <View style={styles.inputContainer}>
         <TextInput
@@ -132,32 +119,16 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
   },
   myMessage: {
-    backgroundColor: "#0000FF", // Blue for buyer messages
+    backgroundColor: "#DCF8C5",
     alignSelf: "flex-end",
-    borderTopRightRadius: 2, // Creates a chat bubble effect
   },
   otherMessage: {
-    backgroundColor: "#008000", // Green for farmer messages
+    backgroundColor: "#FFFFFF",
     alignSelf: "flex-start",
-    borderTopLeftRadius: 2, // Creates a chat bubble effect
   },
   messageText: {
     fontSize: 16,
     color: "#000",
-  },
-  myMessageText: {
-    color: "#FFFFFF", // White text on blue background
-    fontSize: 16,
-  },
-  otherMessageText: {
-    color: "#FFFFFF", // White text on green background
-    fontSize: 16,
-  },
-  timestamp: {
-    fontSize: 12,
-    color: "#999999",
-    alignSelf: "flex-end",
-    marginTop: 4,
   },
   inputContainer: {
     flexDirection: "row",
@@ -188,4 +159,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatScreen;
+export default FarmerChatScreen;

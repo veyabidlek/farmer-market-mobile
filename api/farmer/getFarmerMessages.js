@@ -1,20 +1,18 @@
 import { getToken } from "./getToken";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
-export const getMessages = async (conversationID) => {
+export const getFarmerMessages = async (conversationID) => {
   try {
     const token = await getToken();
+    console.log("convresation id in getMessages:", conversationID);
     const response = await axios.get(
       `${BACKEND_URL}/chat/conversations/${conversationID}/messages`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    return response.data.sort(
-      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-    );
+    return response.data;
   } catch (err) {
-    console.error("Error getting messages:", err);
-    throw err;
+    console.error("error getting messages...");
   }
 };

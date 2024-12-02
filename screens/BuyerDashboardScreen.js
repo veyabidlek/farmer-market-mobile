@@ -1,3 +1,4 @@
+//screens/BuyerDashboardScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -14,6 +15,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Text } from "react-native-elements";
+import { ShoppingCart } from "lucide-react-native";
 import { Filter, ChevronDown, ChevronUp } from "lucide-react-native";
 import BuyerProductCard from "../components/BuyerProductCard";
 import { useFocusEffect } from "@react-navigation/native";
@@ -250,12 +252,17 @@ const BuyerDashboardScreen = ({ navigation }) => {
         )}
       </View>
       <View style={styles.headerActions}>
-        {/* Existing actions */}
         <TouchableOpacity
           onPress={() => navigation.navigate("AllChats")}
           style={styles.allChatsButton}
         >
           <Text style={styles.allChatsButtonText}>All Chats</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Basket")}
+          style={styles.basketButton}
+        >
+          <ShoppingCart size={24} color="#fff" />
         </TouchableOpacity>
       </View>
       {filteredProducts.length === 0 ? (
@@ -438,6 +445,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
+    padding: 16,
+  },
+  basketButton: {
+    marginLeft: 16,
+    padding: 10,
+    backgroundColor: "#007AFF",
+    borderRadius: 8,
   },
   allChatsButton: {
     padding: 10,

@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { View, StyleSheet, ScrollView, Image, Alert } from "react-native";
 import { Text, Button, Input } from "react-native-elements";
 import { startChat } from "../api/buyer/startChat";
+import { useContext } from "react";
+import { BasketContext } from "../contexts/BasketContext";
 const CATEGORIES = [
   { id: 1, name: "Fruits" },
   { id: 2, name: "Vegetables" },
@@ -13,17 +15,21 @@ const CATEGORIES = [
 const ProductDetailScreen = ({ route, navigation }) => {
   const { product } = route.params;
   const [quantity, setQuantity] = useState("1");
+  const { addToBasket } = useContext(BasketContext); // Use BasketContext
 
   const handlePlaceOrder = () => {
-    if (parseInt(quantity) < 1) {
+    const qty = parseInt(quantity);
+    if (qty < 1) {
       Alert.alert("Error", "Quantity must be at least 1.");
       return;
     }
-    // Mock order placement
-    Alert.alert("Success", "Your order has been placed!", [
-      { text: "OK", onPress: () => navigation.goBack() },
+    addToBasket(product, qty);
+    Alert.alert("Success", "Product added to basket.", [
+      { text: "Go to Basket", onPress: () => navigation.navigate("Basket") },
+      { text: "Continue Shopping", onPress: () => navigation.goBack() },
     ]);
   };
+
   const handleStartChat = async () => {
     try {
       const farmerID = product.farmer_id;
@@ -43,7 +49,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
       <ScrollView horizontal>
         <Image source={{ uri: product.image_url }} style={styles.image} />
       </ScrollView>
-
       {/* Product Details */}
       <Text h4 style={{ marginTop: 20 }}>
         {product.name}
@@ -56,7 +61,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
       <Text style={styles.text}>Quantity Available: {product.quantity}</Text>
       <Text style={styles.text}>Farm Location: {product.farm_location}</Text>
       <Text style={styles.description}>{product.description}</Text>
-
       {/* Order Section */}
       <Input
         placeholder="Quantity"
@@ -65,7 +69,7 @@ const ProductDetailScreen = ({ route, navigation }) => {
         keyboardType="numeric"
         style={{ width: 100 }}
       />
-      <Button title="Place Order" onPress={handlePlaceOrder} />
+      <Button title="Add to Basket" onPress={handlePlaceOrder} />{" "}
       <Button
         title="Start Chat"
         onPress={handleStartChat}

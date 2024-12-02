@@ -1,11 +1,23 @@
 // screens/BasketScreen.js
-import React, { useContext } from "react";
-import { View, Text, FlatList, StyleSheet, Button, Alert } from "react-native";
+import React, { useContext, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Button,
+  Alert,
+  TextInput,
+  ScrollView,
+} from "react-native";
 import { BasketContext } from "../contexts/BasketContext";
 
 const BasketScreen = () => {
   const { basketItems, balance, setBalance, clearBasket } =
     useContext(BasketContext);
+
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
 
   const totalCost = basketItems.reduce(
     (total, item) => total + item.product.price * item.quantity,
@@ -20,13 +32,21 @@ const BasketScreen = () => {
       );
       return;
     }
+    if (!address || !city) {
+      Alert.alert("Missing Information", "Please enter your address and city.");
+      return;
+    }
+    // Simulate order placement
     setBalance(balance - totalCost);
     clearBasket();
-    Alert.alert("Order Placed", "Your order has been successfully placed.");
+    Alert.alert(
+      "Order Placed",
+      `Your order has been successfully placed and will be shipped to ${address}, ${city}.`
+    );
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.balanceText}>Balance: ₸{balance.toFixed(2)}</Text>
       <FlatList
         data={basketItems}
@@ -43,14 +63,32 @@ const BasketScreen = () => {
         )}
       />
       <Text style={styles.totalText}>Total: ₸{totalCost.toFixed(2)}</Text>
+
+      {/* Address Input */}
+      <Text style={styles.label}>Address:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your address"
+        value={address}
+        onChangeText={setAddress}
+      />
+
+      {/* City Input */}
+      <Text style={styles.label}>City:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your city"
+        value={city}
+        onChangeText={setCity}
+      />
+
       <Button title="Place Order" onPress={handlePlaceOrder} />
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
   },
   balanceText: {
@@ -68,6 +106,19 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
+  },
+  label: {
+    fontSize: 16,
+    marginTop: 12,
+  },
+  input: {
+    height: 40,
+    borderColor: "#ced4da",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginTop: 4,
+    marginBottom: 12,
   },
 });
 

@@ -43,7 +43,9 @@ const AllChatsScreen = ({ navigation }) => {
       }
     >
       <View style={styles.conversationContent}>
-        <Text style={styles.farmerName}>{item.farmerName || "Farmer"}</Text>
+        <Text style={styles.farmerName}>
+          {item.farmerName || "Farmer Messi"}
+        </Text>
         <Text style={styles.productName}>
           {item.product?.name || "Product"}
         </Text>

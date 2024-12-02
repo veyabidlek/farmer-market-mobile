@@ -1,4 +1,4 @@
-//DashboardScreen.js
+// DashboardScreen.js
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -7,8 +7,9 @@ import {
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
+  Text,
 } from "react-native";
-import { Button, Text, Icon, Tab, TabView } from "react-native-elements";
+import { Button, Icon, Tab, TabView } from "react-native-elements";
 import { useFocusEffect } from "@react-navigation/native";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../api/farmer/getFarmerProducts";
@@ -20,6 +21,29 @@ const DashboardScreen = ({ navigation }) => {
   const [products, setProducts] = useState([]);
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Moved mockOrders into state to manage order removal
+  const [orders, setOrders] = useState([
+    {
+      id: 1,
+      productName: "Onions",
+      quantity: 3,
+      pricePerUnit: 999, // per unit price
+      total: 2997, // quantity * pricePerUnit
+      buyerAddress: "Astana, Kazakhstan",
+    },
+    {
+      id: 2,
+      productName: "Apples",
+      quantity: 10,
+      pricePerUnit: 999,
+      total: 9900,
+      buyerAddress: "Astana, Kazakhstan",
+    },
+  ]);
+
+  // Calculate farmer's balance from orders
+  const farmerBalance = orders.reduce((total, order) => total + order.total, 0);
 
   const fetchProductList = async () => {
     setLoading(true);
@@ -55,9 +79,10 @@ const DashboardScreen = ({ navigation }) => {
     useCallback(() => {
       if (index === 0) {
         fetchProductList();
-      } else {
+      } else if (index === 1) {
         fetchChats();
       }
+      // No need to fetch for index === 2 (OrdersTab) since we're using mock data
     }, [index])
   );
 
@@ -100,13 +125,17 @@ const DashboardScreen = ({ navigation }) => {
       onPress={() =>
         navigation.navigate("FarmerChat", {
           conversationID: item.id,
-          product: item.product, // Make sure your chat list includes product data
+          product: item.product, // Ensure your chat list includes product data
         })
       }
     >
       <View style={styles.chatContent}>
-        <Text style={styles.buyerName}>Buyer: {item.buyerName}</Text>
-        <Text style={styles.productName}>Product: {item.productName}</Text>
+        <Text style={styles.buyerName}>
+          Buyer: {item.buyerName || "Bektas"}
+        </Text>
+        <Text style={styles.productName}>
+          Product: {item.productName || "onions"}
+        </Text>
         <Text style={styles.lastMessage} numberOfLines={1}>
           {item.lastMessage}
         </Text>
@@ -196,6 +225,75 @@ const DashboardScreen = ({ navigation }) => {
     </View>
   );
 
+  // Updated OrdersTab Component
+  const OrdersTab = () => {
+    // Handle marking an order as delivered
+    const handleMarkAsDelivered = (orderId) => {
+      Alert.alert("Confirm Delivery", "Have you delivered this order?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Yes",
+          onPress: () => {
+            setOrders((prevOrders) =>
+              prevOrders.filter((order) => order.id !== orderId)
+            );
+          },
+        },
+      ]);
+    };
+
+    const renderOrder = ({ item }) => (
+      <View style={styles.orderItem}>
+        <View style={styles.orderInfo}>
+          <Text style={styles.orderProductName}>{item.productName}</Text>
+          <Text style={styles.orderDetails}>Quantity: {item.quantity}</Text>
+          <Text style={styles.orderDetails}>
+            Price per unit: ₸{item.pricePerUnit}
+          </Text>
+          <Text style={styles.orderDetails}>Total: ₸{item.total}</Text>
+          <Text style={styles.orderDetails}>
+            Delivery Address: {item.buyerAddress}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.deliveredButton}
+          onPress={() => handleMarkAsDelivered(item.id)}
+        >
+          <Text style={styles.deliveredButtonText}>Delivered</Text>
+        </TouchableOpacity>
+      </View>
+    );
+
+    return (
+      <View style={styles.tabContent}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>My Orders</Text>
+        </View>
+        <View style={styles.balanceContainer}>
+          <Text style={styles.balanceText}>
+            Total Balance: ₸{farmerBalance}
+          </Text>
+        </View>
+        {orders.length === 0 ? (
+          <View style={styles.emptyStateContainer}>
+            <Text style={styles.emptyStateText}>No Pending Orders</Text>
+            <Text style={styles.emptyStateSubtext}>
+              All your orders have been delivered.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={orders}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderOrder}
+            contentContainerStyle={styles.listContainer}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Tab
@@ -222,6 +320,15 @@ const DashboardScreen = ({ navigation }) => {
             color: index === 1 ? "#2E7D32" : "#757575",
           }}
         />
+        <Tab.Item
+          title="Orders"
+          titleStyle={styles.tabTitle}
+          icon={{
+            name: "receipt",
+            type: "material",
+            color: index === 2 ? "#2E7D32" : "#757575",
+          }}
+        />
       </Tab>
 
       <TabView value={index} onChange={setIndex} animationType="spring">
@@ -230,6 +337,9 @@ const DashboardScreen = ({ navigation }) => {
         </TabView.Item>
         <TabView.Item style={styles.tabViewItem}>
           <ChatsTab />
+        </TabView.Item>
+        <TabView.Item style={styles.tabViewItem}>
+          <OrdersTab />
         </TabView.Item>
       </TabView>
     </View>
@@ -341,6 +451,58 @@ const styles = StyleSheet.create({
   lastMessage: {
     fontSize: 14,
     color: "#999999",
+  },
+  // Styles for OrdersTab
+  balanceContainer: {
+    paddingHorizontal: 25,
+    marginBottom: 15,
+  },
+  balanceText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1B5E20",
+  },
+  orderItem: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  orderInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  orderProductName: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#2E7D32",
+    marginBottom: 8,
+  },
+  orderDetails: {
+    fontSize: 14,
+    color: "#424242",
+    marginBottom: 4,
+  },
+  deliveredButton: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  deliveredButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
 

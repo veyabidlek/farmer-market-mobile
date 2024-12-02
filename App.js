@@ -42,7 +42,7 @@ export default function App() {
         </Stack.Screen>
 
         <Stack.Screen name="AllFarmerChats" component={AllFarmerChatsScreen} />
-        <Stack.Screen name="FarmerCaht" component={FarmerChatScreen} />
+        <Stack.Screen name="FarmerChat" component={FarmerChatScreen} />
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="AllChats" component={AllChatsScreen} />
         <Stack.Screen name="FarmerRegister" component={RegisterScreen} />

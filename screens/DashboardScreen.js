@@ -100,7 +100,7 @@ const DashboardScreen = ({ navigation }) => {
       onPress={() =>
         navigation.navigate("FarmerChat", {
           conversationID: item.id,
-          buyerName: item.buyerName,
+          product: item.product, // Make sure your chat list includes product data
         })
       }
     >
